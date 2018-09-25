@@ -1,0 +1,21 @@
+{
+  "firstName": "jan",
+  "lastName": "ker",
+  "address": [
+    {
+      "type": "private",
+      "city": "ad",
+      "country": "China",
+      "isInternal": true,
+      "area": 100
+    },
+    {
+      "type": "private",
+      "city": "ad",
+      "country": "China",
+      "isInternal": false,
+      "area": 200
+    }
+  ],
+  "remark": "good"
+}

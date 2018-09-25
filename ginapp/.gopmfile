@@ -1,0 +1,8 @@
+[deps]
+github.com/gin-gonic/autotls = 
+github.com/gin-gonic/gin = 
+golang.org/x/sync = 
+
+[res]
+include = templates
+

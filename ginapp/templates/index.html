@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>{{.title}}</h2>
+<script>
+    function sayHello(value) {
+        console.log(value);
+    }
+</script>
+<script src="http://localhost:8080/JSONP?callback=sayHello"></script>
+</body>
+</html>
