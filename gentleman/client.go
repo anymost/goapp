@@ -16,5 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(res.Header.Get("server"))
+	fmt.Println(res.Cookies)
 	fmt.Println(res.String())
 }
