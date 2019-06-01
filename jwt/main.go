@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 )
 
 /**
@@ -60,6 +61,7 @@ func handleLogin(context *gin.Context) {
 		})
 	} else {
 		authorization, err := jwtSignature(user)
+		fmt.Println(authorization)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, gin.H{
 				"message": err.Error(),
@@ -77,7 +79,30 @@ func handleUser(context *gin.Context) {
 			"message": "no login",
 		})
 	} else {
-
+		list := strings.Split(authorization, ".")
+		if len(list) != 3 {
+			sendAuthorizeFailed(context)
+			return
+		}
+		header := list[0]
+		payload := list[1]
+		signature := list[2]
+		if val, err := computeSignature(header, payload); err == nil && val == signature {
+			payloadBuffer, err := base64.URLEncoding.DecodeString(payload)
+			if err != nil {
+				sendAuthorizeFailed(context)
+				return
+			}
+			var user *User
+			err = json.Unmarshal(payloadBuffer, &user)
+			if err != nil {
+				sendAuthorizeFailed(context)
+			} else {
+				context.JSON(http.StatusOK, user)
+			}
+		} else {
+			sendAuthorizeFailed(context)
+		}
 	}
 }
 
@@ -104,22 +129,22 @@ func computeSignature(header string, payload string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	signature := h.Sum(nil)
-	return string(signature), nil
+	signature := fmt.Sprintf("%x", h.Sum(nil))
+	return signature, nil
 }
 
 func headerString() (string, error) {
 	buffer, err := json.Marshal(header)
-	if err != nil {
-		return "", err
-	}
-	return base64.URLEncoding.EncodeToString(buffer), nil
+	return string(base64.URLEncoding.EncodeToString(buffer)), err
 }
 
 func payloadString(user *User) (string, error) {
 	buffer, err := json.Marshal(user)
-	if err != nil {
-		return "", err
-	}
-	return base64.URLEncoding.EncodeToString(buffer), nil
+	return string(base64.URLEncoding.EncodeToString(buffer)), err
+}
+
+func sendAuthorizeFailed(context *gin.Context) {
+	context.JSON(http.StatusForbidden, gin.H{
+		"message": "signature not valid",
+	})
 }

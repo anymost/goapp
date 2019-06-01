@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form >
+    <form style="display: none">
         <div>
             <label for="name">name:</label>
             <input type="text" id="name">
@@ -26,10 +26,20 @@
             const value = await fetch('http://localhost:7000/user', {
                 method: 'GET',
                 headers: {
-                    'Authorization': window.authorization
+                    'Authorization': window.authorization || ""
                 }
             });
-
+            const form = document.querySelector('form');
+            if (value.status === 403) {
+                form.style.display = 'block';
+            } else if (value.status === 200) {
+                const data = await value.json();
+                if (data) {
+                    const userWrap = document.querySelector('#user');
+                    form.style.display = 'none';
+                    userWrap.innerHTML = data.name;
+                }
+            }
         }
 
         async function handleLogin(event) {
@@ -48,7 +58,8 @@
             });
             const data = await value.json();
             if (data.message === 'ok') {
-                window.authorization = value.headers.get('Authorization')
+                window.authorization = value.headers.get('Authorization');
+                await fetchUser();
             }
         }
 
