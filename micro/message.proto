@@ -1,0 +1,11 @@
+syntax = "proto3";
+package main;
+
+service Micro {
+    rpc sayHello (Echo) returns (Echo) {}
+}
+
+message Echo {
+    string name = 1;
+    string content = 2;
+}

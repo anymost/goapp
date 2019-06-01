@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <form >
+        <div>
+            <label for="name">name:</label>
+            <input type="text" id="name">
+        </div>
+        <div>
+            <label for="password">password:</label>
+            <input type="password" id="password"/>
+        </div>
+        <button id="submit">submit</button>
+    </form>
+    <div id="user"></div>
+
+    <script>
+        async function fetchUser() {
+            const value = await fetch('http://localhost:7000/user', {
+                method: 'GET',
+                headers: {
+                    'Authorization': window.authorization
+                }
+            });
+
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const name = document.querySelector('#name').value;
+            const password = document.querySelector('#password').value;
+            const value = await fetch('http://localhost:7000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    password
+                })
+            });
+            const data = await value.json();
+            if (data.message === 'ok') {
+                window.authorization = value.headers.get('Authorization')
+            }
+        }
+
+        window.addEventListener('load', async function () {
+            const button = document.querySelector('#submit');
+            await fetchUser();
+            button.addEventListener('click', handleLogin)
+
+        })
+    </script>
+</body>
+</html>

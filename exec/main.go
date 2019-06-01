@@ -50,5 +50,11 @@ func main()  {
 	// lookPath()
 	// cmd()
 	// contextCmd()
-	start()
+	// start()
+
+	cmd := exec.Command("node", "exec/index.js")
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
